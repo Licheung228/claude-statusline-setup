@@ -1,5 +1,7 @@
 [English](./README.md)
 
+**基于 Claude code 官方skill `/statusline`**
+
 # claude-statusline-setup
 
 Claude Code 状态栏，通过 `/statusline-setup` 直接安装。

@@ -1,5 +1,7 @@
 [简体中文](./README_zh.md)
 
+**base on claude code skill `/statusline`**
+
 # claude-statusline-setup
 
 A beautiful, informative statusline for Claude Code installed through `/statusline-setup`.
