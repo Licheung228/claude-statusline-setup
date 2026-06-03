@@ -1,12 +1,10 @@
 $inputJson = [Console]::In.ReadToEnd()
 $data = $inputJson | ConvertFrom-Json
 
-# --- Colors ---
 $ESC = [char]27
 $reset = "$ESC[0m"
 $dim   = "$ESC[2m"
 
-# --- Model ---
 $model = ""
 if ($data.model -is [PSCustomObject]) {
     $model = if ($data.model.display_name) { $data.model.display_name } elseif ($data.model.id) { $data.model.id } else { "" }
@@ -15,7 +13,6 @@ if ($data.model -is [PSCustomObject]) {
 }
 $modelCol = $dim
 
-# --- Thinking ---
 $thinkingEnabled = $data.thinking.enabled -eq $true
 if ($thinkingEnabled) {
     $thinkingStr = "thinking:on"
@@ -25,7 +22,6 @@ if ($thinkingEnabled) {
     $thinkingCol = $dim
 }
 
-# --- Effort ---
 $effortLevel = ""
 if ($data.effort.level) { $effortLevel = $data.effort.level.ToString() }
 $effortStr = ""
@@ -34,7 +30,6 @@ if ($effortLevel -and $effortLevel -ne "medium") {
     $effortStr = $effortLevel
 }
 
-# --- Context helpers ---
 function Get-UsedColor([int]$pct) {
     if ($pct -lt 50) { "$ESC[38;5;76m" }
     elseif ($pct -lt 80) { "$ESC[38;5;178m" }
@@ -47,7 +42,6 @@ function Get-RemainingColor([int]$pct) {
     else { "$ESC[38;5;196m" }
 }
 
-# --- Context used ---
 $ctxUsedStr = ""
 $ctxUsedCol = ""
 $ctxUsedPct = $null
@@ -57,7 +51,6 @@ if ($data.context_window.used_percentage -ne $null) {
     $ctxUsedCol = Get-UsedColor $ctxUsedPct
 }
 
-# --- Context remaining ---
 $ctxRemainingStr = ""
 $ctxRemainingCol = ""
 if ($data.context_window.remaining_percentage -ne $null) {
@@ -70,14 +63,12 @@ if ($data.context_window.remaining_percentage -ne $null) {
     $ctxRemainingCol = Get-RemainingColor $ctxRemPct
 }
 
-# --- Build left side ---
 $leftParts = @()
 if ($model) { $leftParts += "${modelCol}${model}${reset}" }
 if ($thinkingStr) { $leftParts += "${thinkingCol}${thinkingStr}${reset}" }
 if ($effortStr) { $leftParts += "${effortCol}${effortStr}${reset}" }
 $leftPlain = $leftParts -join " · "
 
-# --- Build right side ---
 $rightPlain = ""
 if ($ctxUsedStr -and $ctxRemainingStr) {
     $rightPlain = "${dim}ctx:${reset}${ctxUsedCol}${ctxUsedStr}${reset}${dim}/${reset}${ctxRemainingCol}${ctxRemainingStr}${reset}"
@@ -85,7 +76,6 @@ if ($ctxUsedStr -and $ctxRemainingStr) {
     $rightPlain = "${dim}ctx:${reset}${ctxUsedCol}${ctxUsedStr}${reset}"
 }
 
-# --- Strip ANSI for width calculation ---
 function Strip-Ansi([string]$s) {
     $s -replace '\x1b\[[0-9;]*m', ''
 }
